@@ -21,7 +21,21 @@ Device ID: 0
        *multiProcessorCount: 5
        *Warp Size: 32
 ```
-
+```
+Device ID: 0
+       *Number of SMs: 82
+       Compute Capability Major: 8
+       Compute Capability Minor: 6
+       memoryBusWidth: 384
+       *maxThreadsPerBlock: 1024
+       maxThreadsPerMultiProcessor: 1536
+       *totalGlobalMem: 24252M
+       sharedMemPerBlock: 48KB
+       *sharedMemPerMultiprocessor: 100KB
+       totalConstMem: 64KB
+       *multiProcessorCount: 82
+       *Warp Size: 32
+```
 ## 共享内存
 当在核函数中调用 `__shared__` 申请共享内存时，应当注意sharedMemPerBlock(每个block中共享内存的上限)，例如：
 ```cpp

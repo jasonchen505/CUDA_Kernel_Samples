@@ -29,7 +29,7 @@ __global__ void elementwise_add_float4(float* a, float* b, float* c, int N) {
 }
 
 int main() {
-    constexpr int N = 7;
+    constexpr int N = 9;
     float* a_h = (float*)malloc(N * sizeof(float));
     float* b_h = (float*)malloc(N * sizeof(float));
     float* c_h = (float*)malloc(N * sizeof(float));
@@ -41,15 +41,17 @@ int main() {
     float* a_d = nullptr;
     float* b_d = nullptr;
     float* c_d = nullptr;
-    cudaCheck(cudaMalloc((void**)&a_d, N * sizeof(float)));
-    cudaCheck(cudaMalloc((void**)&b_d, N * sizeof(float)));
-    cudaCheck(cudaMalloc((void**)&c_d, N * sizeof(float)));
+    int vec_N = CEIL(N, 4)*4;
+    cudaCheck(cudaMalloc((void**)&a_d, vec_N * sizeof(float)));
+    cudaCheck(cudaMalloc((void**)&b_d, vec_N * sizeof(float)));
+    cudaCheck(cudaMalloc((void**)&c_d, vec_N * sizeof(float)));
     cudaCheck(cudaMemcpy(a_d, a_h, N * sizeof(float), cudaMemcpyHostToDevice));
     cudaCheck(cudaMemcpy(b_d, b_h, N * sizeof(float), cudaMemcpyHostToDevice));
-
+    cudaCheck(cudaMemset(a_d+N, 0, (vec_N-N) * sizeof(float)));
+    cudaCheck(cudaMemset(b_d+N, 0, (vec_N-N) * sizeof(float)));
     int block_size = 1024;
     int grid_size = CEIL(CEIL(N,4), 1024);
-    elementwise_add_float4<<<grid_size, block_size>>>(a_d, b_d, c_d, N);
+    elementwise_add_float4<<<grid_size, block_size>>>(a_d, b_d, c_d, vec_N);
 
     cudaCheck(cudaMemcpy(c_h, c_d, N * sizeof(float), cudaMemcpyDeviceToHost));
     printf("a_h:\n");

@@ -3,3 +3,8 @@
 
 # cmake
 *build*/
+
+# compiled binaries
+elementwise/add
+example/cuda_info/main
+gemv/sgemv_k32
